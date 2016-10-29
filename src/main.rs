@@ -18,11 +18,10 @@ fn clamp_u8(num:f64) -> u8 {
 }
 // [angle_deg] [in_image] [out_image]
 fn main() {
-    println!("Hello, world!");
     let args: Vec<_> = env::args().collect();
 
     if args.len() < 4 {
-        println!("hue-rotate [angle] [infile] [outfile]");
+        println!("USAGE: hue-rotate [angle:int] [infile.img] [outfile.img]");
         exit(1);
     }
     let ref angle_deg = args[1]; //todo: convert to int and then to f64
@@ -72,7 +71,7 @@ fn main() {
 
         // array of u8 [u8; 4]
         let pixel_data = original_pixel.data;
-        
+
         let r = pixel_data[0] as f64;
         let g = pixel_data[1] as f64;
         let b = pixel_data[2] as f64;
