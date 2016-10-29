@@ -16,10 +16,11 @@ fn main() {
     println!("Hello, world!");
     let args: Vec<_> = env::args().collect();
 
-    if args.len() > 1 {
-        //println!("The first argument is {}", args[1]);
-        let ref angle_deg = args[1];
+    if args.len() < 3 {
+        println!("The first argument is {}. but need 3", args[1]);
+        //exit 1;
     }
+    let ref angle_deg = args[1]; //
     let ref in_image = args[2];
     let ref out_image = args[3];
 
@@ -32,6 +33,11 @@ fn main() {
 
     // The color method returns the image's ColorType
     println!("{:?}", img.color());
+
+    let  (mut imgx, mut imgy) = (img.dimensions().0 as u32, img.dimensions().1 as u32);
+    // Create a new ImgBuf with width: imgx and height: imgy
+    //let mut imgbuf = image::ImageBuffer::new(imgx, imgy);
+
 
     let ref mut fout = File::create(&Path::new(out_image)).unwrap();
 
