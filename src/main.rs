@@ -3,23 +3,38 @@
 // manipulate
 // write file to target locations from third arg
 use std::env;
-use std::os;
+// https://github.com/PistonDevelopers/image
+extern crate image;
+
+use image::GenericImage;
+use std::fs::File;
+use std::path::Path;
+
 
 // [angle_deg] [in_image] [out_image]
 fn main() {
     println!("Hello, world!");
-    //let executable = '';
-
-    // Prints each argument on a separate line
-    for argument in env::args() {
-        println!("{}", argument);
-    }
-    // Prints each argument on a separate line
-    for argument in env::args_os() {
-        println!("{:?}", argument);
-    }
     let args: Vec<_> = env::args().collect();
+
     if args.len() > 1 {
-        println!("The first argument is {}", args[1]);
+        //println!("The first argument is {}", args[1]);
+        let ref angle_deg = args[1];
     }
+    let ref in_image = args[2];
+    let ref out_image = args[3];
+
+    // Use the open function to load an image from a Path.
+    // ```open``` returns a dynamic image.
+    let img = image::open(&Path::new(in_image)).unwrap();
+
+    // The dimensions method returns the images width and height
+    println!("dimensions {:?}", img.dimensions());
+
+    // The color method returns the image's ColorType
+    println!("{:?}", img.color());
+
+    let ref mut fout = File::create(&Path::new(out_image)).unwrap();
+
+    // Write the contents of this image to the Writer in PNG format.
+    let _ = img.save(fout, image::PNG).unwrap();
 }

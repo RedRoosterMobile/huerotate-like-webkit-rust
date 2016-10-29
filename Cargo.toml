@@ -7,3 +7,4 @@ authors = ["Mojo Major <info@redroostermobile.com>"]
 name = "hue-rotate"
 
 [dependencies]
+image = "*"
