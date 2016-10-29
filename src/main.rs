@@ -1,24 +1,19 @@
-// read first arg
-// read roatation
-// manipulate
-// write file to target locations from third arg
 use std::env;
 use std::f64::consts::PI;
 // https://github.com/PistonDevelopers/image
 extern crate image;
 
 use image::GenericImage;
-// use std::fs::File;
 use std::path::Path;
 use std::process::exit;
 
-fn clamp(num:f64) -> f64 {
-    if (num < 0.0) {
-        return 0.0;
-    } else if (num > 255.0){
-        return 255.0;
+fn clamp_u8(num:f64) -> u8 {
+    if num < 0.0 {
+        return 0;
+    } else if num > 255.0 {
+        return 255;
     } else {
-        return num;
+        return num as u8;
     }
 }
 // [angle_deg] [in_image] [out_image]
@@ -27,7 +22,7 @@ fn main() {
     let args: Vec<_> = env::args().collect();
 
     if args.len() < 4 {
-        println!("The first argument is {}. but need 4", args[1]);
+        println!("hue-rotate [angle] [infile] [outfile]");
         exit(1);
     }
     let ref angle_deg = args[1]; //todo: convert to int and then to f64
@@ -53,8 +48,9 @@ fn main() {
         0.0, 1.0, 0.0,   // Greens
         0.0, 0.0, 1.0    // Blues
     ];
-    // dummy
-    let angle = 3.0;
+
+    let angle = angle_deg.parse::<i32>().unwrap() as f64;
+
     let cosv = (angle * PI / 180.0).cos();
     let sinv = (angle * PI / 180.0).sin();
     // Iterate over the coordiantes and pixels of the image
@@ -62,7 +58,6 @@ fn main() {
         let mut original_pixel = img.get_pixel(x, y);
         // taken from webkit:
         // /Source/WebCore/platform/graphics/texmap/TextureMapperShaderProgram.cpp
-        // todo: do manipulations
         matrix[0] = 0.213 + cosv * 0.787 - sinv * 0.213;
         matrix[1] = 0.715 - cosv * 0.715 - sinv * 0.715;
         matrix[2] = 0.072 - cosv * 0.072 + sinv * 0.928;
@@ -75,6 +70,16 @@ fn main() {
         matrix[7] = 0.715 - cosv * 0.715 + sinv * 0.715;
         matrix[8] = 0.072 + cosv * 0.928 + sinv * 0.072;
 
+        // array of u8 [u8; 4]
+        let pixel_data = original_pixel.data;
+        
+        let r = pixel_data[0] as f64;
+        let g = pixel_data[1] as f64;
+        let b = pixel_data[2] as f64;
+
+        original_pixel.data[0] = clamp_u8(matrix[0] * r + matrix[1] * g + matrix[2] * b);
+        original_pixel.data[1] = clamp_u8(matrix[3] * r + matrix[4] * g + matrix[5] * b);
+        original_pixel.data[2] = clamp_u8(matrix[6] * r + matrix[7] * g + matrix[8] * b);
 
         *pixel = original_pixel;
     }
