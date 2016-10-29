@@ -1,0 +1,9 @@
+[package]
+name = "hue-rotate"
+version = "0.1.0"
+authors = ["Mojo Major <info@redroostermobile.com>"]
+
+[[bin]]
+name = "hue-rotate"
+
+[dependencies]
