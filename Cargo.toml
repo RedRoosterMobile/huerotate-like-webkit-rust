@@ -8,3 +8,4 @@ name = "hue-rotate"
 
 [dependencies]
 image = "*"
+time = "0.1.35"

@@ -1,30 +1,35 @@
-use std::env;
-use std::f64::consts::PI;
+
 // https://github.com/PistonDevelopers/image
 extern crate image;
-
 use image::GenericImage;
+
+extern crate time;
+use time::PreciseTime;
+
+use std::env;
+use std::f64::consts::PI;
 use std::path::Path;
 use std::process::exit;
 
 fn clamp_u8(num:f64) -> u8 {
-    if num < 0.0 {
-        return 0;
-    } else if num > 255.0 {
-        return 255;
+    if (num as u8) < u8::min_value() {
+        return u8::min_value();
+    } else if (num as u8) > u8::max_value() {
+        return u8::max_value();
     } else {
         return num as u8;
     }
 }
 // [angle_deg] [in_image] [out_image]
 fn main() {
+    let start = PreciseTime::now();
     let args: Vec<_> = env::args().collect();
 
     if args.len() < 4 {
         println!("USAGE: hue-rotate [angle:int] [infile.img] [outfile.img]");
         exit(1);
     }
-    let ref angle_deg = args[1]; //todo: convert to int and then to f64
+    let ref angle_deg = args[1];
     let ref in_image = args[2];
     let ref out_image = args[3];
 
@@ -33,25 +38,24 @@ fn main() {
     let img = image::open(&Path::new(in_image)).unwrap();
 
     // The dimensions method returns the images width and height
-    println!("dimensions {:?}", img.dimensions());
+    // println!("dimensions {:?}", img.dimensions());
 
     // The color method returns the image's ColorType
-    println!("{:?}", img.color());
+    // println!("{:?}", img.color());
 
     let  (imgx, imgy) = (img.dimensions().0 as u32, img.dimensions().1 as u32);
     // Create a new ImgBuf with width: imgx and height: imgy
     let mut imgbuf = image::ImageBuffer::new(imgx, imgy);
 
+    let angle = angle_deg.parse::<i32>().unwrap() as f64;
+
+    let cosv = (angle * PI / 180.0).cos();
+    let sinv = (angle * PI / 180.0).sin();
     let mut matrix: [f64; 9] = [
         1.0, 0.0, 0.0,   // Reds
         0.0, 1.0, 0.0,   // Greens
         0.0, 0.0, 1.0    // Blues
     ];
-
-    let angle = angle_deg.parse::<i32>().unwrap() as f64;
-
-    let cosv = (angle * PI / 180.0).cos();
-    let sinv = (angle * PI / 180.0).sin();
     // Iterate over the coordiantes and pixels of the image
     for (x, y, pixel) in imgbuf.enumerate_pixels_mut() {
         let mut original_pixel = img.get_pixel(x, y);
@@ -83,5 +87,13 @@ fn main() {
         *pixel = original_pixel;
     }
 
-    imgbuf.save(&Path::new(out_image));
+    let result = imgbuf.save(&Path::new(out_image));
+    let end = PreciseTime::now();
+    if result.is_ok() {
+        println!("saved to: {:?}", out_image);
+        println!("{} seconds for whatever you did.", start.to(end));
+    } else {
+        println!("error saving buffer to: {:?}", out_image);
+        exit(1);
+    }
 }
