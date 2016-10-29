@@ -36,11 +36,20 @@ fn main() {
 
     let  (mut imgx, mut imgy) = (img.dimensions().0 as u32, img.dimensions().1 as u32);
     // Create a new ImgBuf with width: imgx and height: imgy
-    //let mut imgbuf = image::ImageBuffer::new(imgx, imgy);
+    let mut imgbuf = image::ImageBuffer::new(imgx, imgy);
 
+    // Iterate over the coordiantes and pixels of the image
+    for (x, y, pixel) in imgbuf.enumerate_pixels_mut() {
+        *pixel = img.get_pixel(x, y);
+    }
+    // Save the image as “fractal.png”
+    // let ref mut fout = File::create(&Path::new("fractal.png")).unwrap();
+    //= note: expected type `&[u8]`
+    //= note:    found type `image::ImageBuffer<image::Rgba<u8>, std::vec::Vec<u8>>`
+    //image::save_buffer(&Path::new("fractal.png"), imgbuf.pixels()., imgx, imgy, image::RGB(8)).unwrap();
+    imgbuf.save(&Path::new(out_image));
 
-    let ref mut fout = File::create(&Path::new(out_image)).unwrap();
-
+    //let ref mut fout = File::create(&Path::new(out_image)).unwrap();
     // Write the contents of this image to the Writer in PNG format.
-    let _ = img.save(fout, image::PNG).unwrap();
+    //let _ = img.save(fout, image::PNG).unwrap();
 }
