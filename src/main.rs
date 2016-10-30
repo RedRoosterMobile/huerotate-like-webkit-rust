@@ -2,7 +2,7 @@
 // https://github.com/PistonDevelopers/image
 extern crate image;
 use image::GenericImage;
-
+// TEST: filter: hue-rotate(180deg);
 extern crate time;
 use time::PreciseTime;
 
@@ -12,9 +12,9 @@ use std::path::Path;
 use std::process::exit;
 
 fn clamp_u8(num:f64) -> u8 {
-    if (num as u8) < u8::min_value() {
+    if num < 0.0 {
         return u8::min_value();
-    } else if (num as u8) > u8::max_value() {
+    } else if num > 255.0 {
         return u8::max_value();
     } else {
         return num as u8;
@@ -36,6 +36,10 @@ fn main() {
     // Use the open function to load an image from a Path.
     // ```open``` returns a dynamic image.
     let img = image::open(&Path::new(in_image)).unwrap();
+    // maybe add this to piston imageops/colorops methods
+    // img.rotate180() TODO img.huerotate(180)
+    // https://github.com/PistonDevelopers/image/blob/0d3b652f6704886a287b3b9eb6e283809b438c04/src/imageops/sample.rs
+    // https://github.com/PistonDevelopers/image/blob/0d3b652f6704886a287b3b9eb6e283809b438c04/src/imageops/mod.rs
 
     // The dimensions method returns the images width and height
     // println!("dimensions {:?}", img.dimensions());
@@ -43,7 +47,7 @@ fn main() {
     // The color method returns the image's ColorType
     // println!("{:?}", img.color());
 
-    let  (imgx, imgy) = (img.dimensions().0 as u32, img.dimensions().1 as u32);
+    let  (imgx, imgy) = img.dimensions();
     // Create a new ImgBuf with width: imgx and height: imgy
     let mut imgbuf = image::ImageBuffer::new(imgx, imgy);
 

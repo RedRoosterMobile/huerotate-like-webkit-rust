@@ -7,5 +7,6 @@ authors = ["Mojo Major <info@redroostermobile.com>"]
 name = "hue-rotate"
 
 [dependencies]
-image = "*"
+image = { git = "https://github.com/RedRoosterMobile/image" }
+# image = "*"
 time = "0.1.35"
